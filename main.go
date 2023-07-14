@@ -10,6 +10,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -17,8 +18,8 @@ import (
 
 type Todo struct {
 	gorm.Model
-	Name string
-	Done bool
+	Name string `json:"name"`
+	Done bool   `json:"done"`
 }
 
 func init() {
@@ -39,6 +40,10 @@ func main() {
 	app := fiber.New()
 
 	app.Use(logger.New())
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: os.Getenv("ALLOW_ORIGINS"),
+	}))
 
 	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.SendString("ok")
